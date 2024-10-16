@@ -14,7 +14,7 @@ const ALLOWED_ORIGIN = '*.ricado.co.nz'
 const server = http.createServer(async (req, res) => 
 {
     const origin = req.headers.origin
-  
+    
     // restrict origin
 
     // if (!origin || !origin.endsWith(ALLOWED_ORIGIN)) 
@@ -23,6 +23,8 @@ const server = http.createServer(async (req, res) =>
     //     res.end('Forbidden: Unauthorized origin')
     //     return
     // }
+
+    res.setHeader('Content-Type', 'application/json')
 
     if (req.method === 'GET' && req.url?.startsWith('/generate-manifest'))
     {
@@ -38,15 +40,14 @@ const server = http.createServer(async (req, res) =>
         try {
             const filesToIndex: string[] = await getAvailableChunks(camera_id)
 
-            res.end(JSON.stringify(filesToIndex))
-            return
+            // res.end(JSON.stringify(filesToIndex))
+            // return
 
-            // await generateManifest(camera_id, filesToIndex)
+            await generateManifest(camera_id, filesToIndex)
             // await cleanupChunks(camera_id)
 
-            // res.statusCode = 200
-            // res.setHeader('Content-Type', 'application/json')
-            // res.end(JSON.stringify({ message: 'Manifests generated and cleanup triggered' }))
+            res.statusCode = 200
+            res.end(JSON.stringify({ message: 'Manifests generated and cleanup triggered' }))
         } 
         catch (error) 
         {

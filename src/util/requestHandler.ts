@@ -28,9 +28,9 @@ export async function getAvailableChunks(camera_id: string): Promise<string[]>
         return []
     }
 
-    const data: string[] = await response.json() as string[]
-    console.warn('available chunks', data)
-    return data
+    const data: any = await response.json()
+
+    return data?.results || []
 }
 
 // tell Cloudflare to remove chunks past the retention policy
@@ -56,5 +56,7 @@ export async function cleanupChunks(camera_id: string)
         return response
     }
 
-    return response.json()
+    const data: any = await response.json()
+
+    return data?.results || []
 }

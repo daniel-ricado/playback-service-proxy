@@ -14,6 +14,12 @@ const NGINX_MANIFEST_PATH = './manifests'
 export async function generateManifest(camera_id: string, files: string[]): Promise<void> 
 {    
     const manifestFilePath = path.join(NGINX_MANIFEST_PATH, `${camera_id}.m3u8`)
+
+    if (fs.existsSync(manifestFilePath)) 
+    {
+        fs.unlinkSync(manifestFilePath)
+    }
+
     const writeStream = fs.createWriteStream(manifestFilePath, { flags: 'w' })
 
     try 
@@ -45,7 +51,7 @@ async function writeHeader(writeStream: fs.WriteStream): Promise<void>
     const header = [
         '#EXTM3U',
         '#EXT-X-VERSION:3',
-        `#EXT-X-TARGETDURATION:${CHUNK_DURATION}`,
+        `#EXT-X-TARGETDURATION:30`,
         '#EXT-X-MEDIA-SEQUENCE:0\n'
     ].join('\n')
 
@@ -53,13 +59,18 @@ async function writeHeader(writeStream: fs.WriteStream): Promise<void>
 }
 
 // Process each batch of files and write to the manifest
-async function processBatch(files: string[], writeStream: fs.WriteStream): Promise<void> 
+async function processBatch(files: any[], writeStream: fs.WriteStream): Promise<void> 
 {
+    const cloudflareBasePath = process.env.CLOUDFLARE_BUCKET
+
     for (const file of files) 
     {
-        const segmentInfo = `#EXTINF:${CHUNK_DURATION},\n${file}\n`
+        const segmentInfo = `#EXTINF:30,\n${cloudflareBasePath}/${file.camera_id}/${file.filename}\n`
         writeStream.write(segmentInfo)
     }
+
+    const missingFootageInfo = `#EXTINF:1,\n${cloudflareBasePath}/MISSING_FOOTAGE.mkv\n`
+    writeStream.write(missingFootageInfo)
 }
 
 // write m3u8 footer
