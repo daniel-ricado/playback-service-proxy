@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "ESNext", // or "ES2020"
+    "target": "ESNext",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node",
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "./", // Add this line
+    "paths": { // Add this line
+      "*": ["src/*"] // Add this line
+    } // Add this line
+  }
+}
