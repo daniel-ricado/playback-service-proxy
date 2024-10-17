@@ -1,4 +1,4 @@
 node_modules/
 dist/
 manifests/
-.env
+appConfig.js

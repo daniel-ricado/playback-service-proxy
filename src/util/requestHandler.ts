@@ -1,5 +1,8 @@
 import fetch from 'node-fetch'
 
+// @ts-ignore
+import appConfig from '../../appConfig.js'
+
 enum ERequestTypes {
 	GET_AVAILABLE_CHUNKS = 'GET_AVAILABLE_CHUNKS',
 	REMOVE_CHUNKS = 'REMOVE_CHUNKS'	
@@ -8,8 +11,8 @@ enum ERequestTypes {
 // Fetch files from Cloudflare transfer_database
 export async function getAvailableChunks(camera_id: string): Promise<string[]>
 {
-    const bearerToken = process.env.CLOUDFLARE_SECRET;
-    const cloudflareUrl = process.env.CLOUDFLARE_URL;
+    const bearerToken = appConfig.CLOUDFLARE_SECRET;
+    const cloudflareUrl = appConfig.CLOUDFLARE_URL;
 
     const cameraIdQueryString = camera_id ? '&camera_id=' + camera_id : ''
 
@@ -36,8 +39,8 @@ export async function getAvailableChunks(camera_id: string): Promise<string[]>
 // tell Cloudflare to remove chunks past the retention policy
 export async function cleanupChunks(camera_id: string) 
 {
-    const bearerToken = process.env.BEARER_TOKEN
-    const cloudflareCleanupUrl = process.env.CLOUDFLARE_URL
+    const bearerToken = appConfig.BEARER_TOKEN
+    const cloudflareCleanupUrl = appConfig.CLOUDFLARE_URL
 
     const cameraIdQueryString = camera_id ? '&camera_id=' + camera_id : ''
 

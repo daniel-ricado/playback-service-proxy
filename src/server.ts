@@ -4,7 +4,8 @@ import dotenv from 'dotenv'
 import { getAvailableChunks, cleanupChunks } from './util/requestHandler.js'
 import { generateManifest } from './util/generateManifest.js'
 
-dotenv.config()
+// @ts-ignore
+import appConfig from '../appConfig.js'
 
 const hostname = '127.0.0.1'
 const port = 3000
@@ -40,10 +41,8 @@ const server = http.createServer(async (req, res) =>
         try {
             const filesToIndex: string[] = await getAvailableChunks(camera_id)
 
-            // res.end(JSON.stringify(filesToIndex))
-            // return
-
             await generateManifest(camera_id, filesToIndex)
+            // @todo
             // await cleanupChunks(camera_id)
 
             res.statusCode = 200
@@ -64,5 +63,6 @@ const server = http.createServer(async (req, res) =>
 
 server.listen(port, hostname, () => 
 {
-  console.log(`Server running at http://${hostname}:${port}/`)
+    console.log(`Server running at http://${hostname}:${port}/`)
+    console.log(`env: ${appConfig.CLOUDFLARE_URL}`)
 })

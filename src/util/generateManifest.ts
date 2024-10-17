@@ -1,14 +1,16 @@
 import fs from 'fs';
 import path from 'path';
-import { pipeline } from 'stream/promises';
+
+// @ts-ignore
+import appConfig from '../../appConfig.js'
 
 // Constants
 const CHUNK_DURATION = 30
 const BATCH_SIZE = 100
-// const NGINX_MANIFEST_PATH = process.env.NGINX_MANIFEST_PATH || '/var/nginx/manifests'
+const NGINX_MANIFEST_PATH = appConfig.NGINX_MANIFEST_PATH || '/var/nginx/manifests'
 
 // test
-const NGINX_MANIFEST_PATH = './manifests'
+// const NGINX_MANIFEST_PATH = './manifests'
 
 // Generate m3u8 manifest per camera
 export async function generateManifest(camera_id: string, files: string[]): Promise<void> 
@@ -42,6 +44,10 @@ export async function generateManifest(camera_id: string, files: string[]): Prom
     finally 
     {
         writeStream.close()
+
+        await new Promise(resolve => writeStream.on('finish', resolve));
+
+        fs.chmodSync(manifestFilePath, '755');
     }
 }
 
@@ -61,7 +67,7 @@ async function writeHeader(writeStream: fs.WriteStream): Promise<void>
 // Process each batch of files and write to the manifest
 async function processBatch(files: any[], writeStream: fs.WriteStream): Promise<void> 
 {
-    const cloudflareBasePath = process.env.CLOUDFLARE_BUCKET
+    const cloudflareBasePath = appConfig.CLOUDFLARE_BUCKET
 
     for (const file of files) 
     {
